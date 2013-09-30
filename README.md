@@ -57,6 +57,7 @@ documentation for each plugin for configurable attributes.
 
 * `apache`  (see [collectd::plugin::apache](#class-collectdpluginapache) below)
 * `bind`
+* `curl_json` (see [collectd::plugin::curl_json](#class-collectdplugincurl_json) below)
 * `df`  (see [collectd::plugin::df](#class-collectdplugindf) below)
 * `disk` (see [collectd::plugin::disk](#class-collectdplugindisk) below)
 * `filecount` (see [collectd::plugin::filecount](#class-collectdpluginfilecount) below)
@@ -74,6 +75,7 @@ documentation for each plugin for configurable attributes.
 * `tcpconns` (see [collectd::plugin::tcpconns](#class-collectdplugintcpconns) below)
 * `unixsock` (see [collectd::plugin::unixsock](#class-collectdpluginunixsock) below)
 * `write_graphite` (see [collectd::plugin::write_graphite](#class-collectdpluginwrite_graphite) below)
+* `write_network` (see [collectd::plugin::write_network](#class-collectdpluginwrite_network) below)
 
 ####Class: `collectd::plugin::apache`
 
@@ -87,6 +89,19 @@ class { 'collectd::plugin::apache':
       'url' => 'http://localhost:8080/mod_status?auto'
     }
   },
+}
+```
+
+####Class: `collectd::plugin::curl_json`
+
+```puppet
+collectd::plugin::curl_json {
+  'rabbitmq_overview':
+    url => 'http://localhost:55672/api/overview',
+    instance => 'rabbitmq_overview',
+    keys => {
+      'message_stats/publish' => {'type' => 'gauge'},
+    }
 }
 ```
 
@@ -212,11 +227,23 @@ class {'collectd::plugin::unixsock':
 }
 
 ```
+
 ####Class: `collectd::plugin::write_graphite`
 
 ```puppet
 class { 'collectd::plugin::write_graphite':
   graphitehost => 'graphite.examle.org',
+}
+```
+
+####Class: `collectd::plugin::write_network`
+
+```puppet
+class { 'collectd::plugin::write_network':
+  servers => {
+    'collect1.example.org' => { 'serverport' => '25826' },
+    'collect2.example.org' => { 'serverport' => '25826' }
+  }
 }
 ```
 
