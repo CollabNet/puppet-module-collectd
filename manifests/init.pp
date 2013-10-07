@@ -1,16 +1,18 @@
+#
 class collectd(
   $fqdnlookup   = true,
   $interval     = 10,
+  $purge        = undef,
+  $purge_config = false,
+  $recurse      = undef,
   $threads      = 5,
   $timeout      = 2,
-  $purge        = undef,
-  $recurse      = undef,
-  $purge_config = false,
   $version      = installed,
 ) {
   include collectd::params
 
   $plugin_conf_dir = $collectd::params::plugin_conf_dir
+  validate_bool($purge_config, $fqdnlookup)
 
   package { 'collectd':
     ensure   => $version,
@@ -41,9 +43,17 @@ class collectd(
   }
 
   if $purge_config != true {
-    # Include conf_d directory
+    # former include of conf_d directory
     file_line { 'include_conf_d':
+      ensure  => absent,
       line    => "Include \"${collectd::params::plugin_conf_dir}/\"",
+      path    => $collectd::params::config_file,
+      notify  => Service['collectd'],
+    }
+    # include (conf_d directory)/*.conf
+    file_line { 'include_conf_d_dot_conf':
+      ensure  => present,
+      line    => "Include \"${collectd::params::plugin_conf_dir}/*.conf\"",
       path    => $collectd::params::config_file,
       notify  => Service['collectd'],
     }
