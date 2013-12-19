@@ -1,9 +1,13 @@
 # https://collectd.org/wiki/index.php/Graphite
 class collectd::plugin::write_graphite (
-  $ensure       = present,
-  $graphitehost = 'localhost',
-  $graphiteport = 2003,
-  $storerates   = false,
+  $ensure          = present,
+  $graphitehost    = 'localhost',
+  $graphiteport    = 2003,
+  $storerates      = false,
+  $graphiteprefix  = 'collectd.',
+  $graphitepostfix = undef,
+  $escapecharacter = '_',
+  $alwaysappendds  = false,
 ) {
   include collectd::params
 
@@ -15,7 +19,7 @@ class collectd::plugin::write_graphite (
     path      => "${conf_dir}/write_graphite.conf",
     mode      => '0644',
     owner     => 'root',
-    group     => 'root',
+    group     => $collectd::params::root_group,
     content   => template('collectd/write_graphite.conf.erb'),
     notify    => Service['collectd'],
   }

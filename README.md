@@ -55,6 +55,7 @@ Configurable Plugins
 Parameters will vary widely between plugins. See the collectd
 documentation for each plugin for configurable attributes.
 
+* `amqp`  (see [collectd::plugin::amqp](#class-collectdpluginamqp) below)
 * `apache`  (see [collectd::plugin::apache](#class-collectdpluginapache) below)
 * `bind`  (see [collectd::plugin::bind](#class-collectdpluginbind) below)
 * `curl_json` (see [collectd::plugin::curl_json](#class-collectdplugincurl_json) below)
@@ -71,6 +72,10 @@ documentation for each plugin for configurable attributes.
 * `nginx` (see [collectd::plugin::nginx](#class-collectdpluginnginx) below)
 * `ntpd` (see [collectd::plugin::ntpd](#class-collectdpluginntpd) below)
 * `openvpn` (see [collectd::plugin::openvpn](#class-collectdpluginopenvpn) below)
+* `ping` (see [collectd::plugin::ping](#class-collectdpluginping) below)
+* `processes` (see [collectd::plugin:processes](#class-collectdpluginprocesses) below)
+* `python` (see [collectd::plugin::python](#class-collectdpluginpython) below)
+* `rrdcached` (see [collectd::plugin::rrdcached](#class-collectdpluginrrdcached) below)
 * `snmp` (see [collectd::plugin::snmp](#class-collectdpluginsnmp) below)
 * `syslog` (see [collectd::plugin::syslog](#class-collectdpluginsyslog) below)
 * `tail` (see [collectd::plugin::tail](#class-collectdplugintail) below)
@@ -78,6 +83,18 @@ documentation for each plugin for configurable attributes.
 * `unixsock` (see [collectd::plugin::unixsock](#class-collectdpluginunixsock) below)
 * `write_graphite` (see [collectd::plugin::write_graphite](#class-collectdpluginwrite_graphite) below)
 * `write_network` (see [collectd::plugin::write_network](#class-collectdpluginwrite_network) below)
+* `write_riemann` (see [collectd::plugin::write_riemann](#class-collectdpluginwrite_riemann) below)
+
+####Class: `collectd::plugin::amqp`
+
+```puppet
+class { 'collectd::plugin::amqp':
+  amqphost => '127.0.0.1',
+  amqpvhost => 'myvirtualhost',
+  graphiteprefix => 'collectdmetrics',
+  amqppersistent => true,
+}
+```
 
 ####Class: `collectd::plugin::apache`
 
@@ -196,12 +213,12 @@ class { 'collectd::plugin::memcached':
 ####Class: `collectd::plugin::mysql`
 
 ```puppet
-class { 'collectd::plugin::mysql':
-  database  => 'betadase',
-  host      => 'localhost',
-  username  => 'stahmna',
-  password  => 'secret',
-  port      => '3306',
+collectd::plugin::mysql::database { 'betadase':
+  host        => 'localhost',
+  username    => 'stahmna',
+  password    => 'secret',
+  port        => '3306',
+  masterstats => true,
 }
 ```
 
@@ -239,6 +256,47 @@ class { 'collectd::plugin::ntpd':
 class { 'collectd::plugin::openvpn':
   collectindividualusers => false,
   collectusercount       => true,
+}
+```
+
+####Class: `collectd::plugin::ping`
+
+```puppet
+collectd::plugin::ping {
+  'example':
+    hosts => ['example.com'],
+}
+```
+
+####Class: `collectd::plugin::processes`
+
+```puppet
+class { 'collectd::plugin::processes':
+  processes => ['process1', 'process2'],
+  process_matches => [
+    { name => 'process-all', regex => 'process.*' }
+  ],
+}
+```
+
+####Class: `collectd::plugin::python`
+
+```puppet
+collectd::plugin::python {
+  'elasticsearch':
+    modulepath    => '/usr/lib/collectd',
+    module        => 'elasticsearch',
+    script_source => 'puppet:///modules/myorg/elasticsearch_collectd_python.py',
+    config        => {'Cluster' => 'elasticsearch'},
+}
+```
+
+####Class: `collectd::plugin::rrdcached`
+
+```puppet
+class { 'collectd::plugin::rrdcached':
+  daemonaddress => 'unix:/var/run/rrdcached.sock',
+  datadir       => '/var/lib/rrdcached/db/collectd',
 }
 ```
 
@@ -332,6 +390,15 @@ class { 'collectd::plugin::write_network':
     'collect1.example.org' => { 'serverport' => '25826' },
     'collect2.example.org' => { 'serverport' => '25826' }
   }
+}
+```
+
+####Class: `collectd::plugin::write_riemann`
+
+```puppet
+class { 'collectd::plugin::write_riemann':
+  riemann_host => 'riemann.example.org',
+  riemann_port => 5555,
 }
 ```
 
